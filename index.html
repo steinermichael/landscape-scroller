@@ -1,0 +1,358 @@
+<!doctype html>
+<html class="no-js" lang="">
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <title></title>
+  <meta name="description" content="">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+  <link rel="manifest" href="site.webmanifest">
+  <link rel="apple-touch-icon" href="icon.png">
+  <!-- Place favicon.ico in the root directory -->
+
+  <link rel="stylesheet" href="css/normalize.css">
+  <link rel="stylesheet" href="css/main.css">
+</head>
+
+<body>
+
+  <style type="text/css">
+
+      body {
+          width: 1000px;
+          margin: 10px auto;
+      }
+
+      .layer_selection_box {
+          margin-bottom: 10px;
+          border: 1px solid black;
+          margin-top: 10px;
+          height: 30px;
+      }
+
+      .layer_selection_box input {
+          width: 60px;
+      }
+
+      .layer_selection_box.active {
+          border-width: 3px;
+      }
+
+      #main_svg {
+          border: 1px solid black;
+          height: 600px;
+          width: 1000px;
+          display: block;
+      }
+
+      .color_info_label {
+          width: 20px;
+          height: 30px;
+          display: inline-block;
+          float: right;
+      }
+
+  </style>
+  <!--[if lte IE 9]>
+    <p class="browserupgrade">You are using an <strong>outdated</strong> browser. Please <a href="https://browsehappy.com/">upgrade your browser</a> to improve your experience and security.</p>
+  <![endif]-->
+
+  <svg id="main_svg" height="600" width="1000"></svg>
+
+  <form>
+    <button type="submit" id="add_layer_button">Add Layer</button>
+  </form>
+
+  <div id="layer_selectors"></div>
+
+  <script src="js/vendor/modernizr-3.6.0.min.js"></script>
+  <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+  <script>window.jQuery || document.write('<script src="js/vendor/jquery-3.3.1.min.js"><\/script>')</script>
+  <script src="js/plugins.js"></script>
+  <script src="js/main.js"></script>
+  <script type="text/javascript">
+
+      var layerIds = [];
+      var $layerSelectors = $('#layer_selectors');
+      var $mainSvg = $("#main_svg");
+      var svgMaxX = $mainSvg.width();
+      var svgMaxY = $mainSvg.height();
+      var activeLayerId = '';
+
+      console.log("width", svgMaxX);
+      console.log("height", svgMaxY);
+
+      function makeSvg(tag, attrs) {
+          var el= document.createElementNS('http://www.w3.org/2000/svg', tag);
+          for (var k in attrs)
+              el.setAttribute(k, attrs[k]);
+          return el;
+      }
+
+      function getRandomColor() {
+          var letters = '0123456789ABCDEF';
+          var color = '#';
+          for (var i = 0; i < 6; i++) {
+              color += letters[Math.floor(Math.random() * 16)];
+          }
+          return color;
+      }
+
+      function getRandomInt(max) {
+          return Math.floor(Math.random() * Math.floor(max));
+      }
+
+      function getRandomNumberOfSpikes() {
+          return 1+getRandomInt(20);
+      }
+
+      function getRandomYOffset() {
+          return getRandomInt(svgMaxY);
+      }
+
+      function getRandomRange() {
+          return getRandomInt(svgMaxY/30);
+      }
+
+      function init() {
+          //var yOffset =
+
+          //var iterations = 1+getRandomInt(5);
+          var iterations = 1;
+          for (var i=0; i<iterations; i++) {
+              var layerData = {
+                id: 'layer' + i,
+                numbersOfSpikes: getRandomNumberOfSpikes(),
+                yOffset: getRandomYOffset(100),
+                yRandomRange: getRandomRange(),
+                color: getRandomColor()
+              };
+
+              addLayer(
+                      'main_svg',
+                      layerData.id,
+                      getRandomNumberOfSpikes(),
+                      layerData.yOffset,
+                      layerData.yRandomRange,
+                      layerData.color
+              );
+
+              layerData.yOffset += getRandomInt(Math.floor(svgMaxY/iterations));
+              layerIds.push(layerData);
+          }
+
+          if (layerIds.length >= 1) {
+              activeLayerId = layerIds[0];
+          }
+
+          updateLayerSelectors();
+      }
+
+      function updateLayerSelectors() {
+          var tmpArray = [];
+          $.each(layerIds, function(index, layerData) {
+              tmpArray.push('<div class="layer_selection_box" id="selection_' + layerData.id + '">' + layerData.id + '');
+              tmpArray.push('   <button class="update_from_input_fields_button">Update</button>');
+              tmpArray.push('   <button class="update_with_random_values_button">Random</button>');
+              tmpId = 'input_y_number_of_spikes_' + layerData.id;
+              tmpArray.push('   <label for="' + tmpId + '">numbersOfSpikes</label><input id="' + tmpId + '" value="' + layerData.numbersOfSpikes + '" type="number" step="1" class="input_number_of_spikes">');
+              var tmpId = 'input_y_offset_' + layerData.id;
+              tmpArray.push('   <label for="' + tmpId + '">YOffset</label><input id="' + tmpId + '" value="' + layerData.yOffset + '" type="number" class="input_y_offset">');
+              tmpId = 'input_y_random_range_' + layerData.id;
+              tmpArray.push('   <label for="' + tmpId + '">yRandomRange</label><input id="' + tmpId + '" value="' + layerData.yRandomRange + '" type="number" class="input_y_random_range">');
+              tmpArray.push('   <div class="color_info_label" style="background-color: ' + layerData.color + '"></div>');
+              tmpArray.push('</div>');
+          });
+
+          $layerSelectors.html(tmpArray.join(""));
+      }
+
+      function addLayer(svgId, layerId, numbersOfSpikes, yOffset, yRandomRange, color) {
+          console.log("addLayer called with parameters");
+          console.log({svgId: svgId, numbersOfSpikes: numbersOfSpikes, yOffset:yOffset, yRandomRange:yRandomRange, color:color})
+
+          //var pointsArray = ['200,10', '250,190', '160,210'];
+//          var pointsArray = [];
+
+
+//          var x = 0;
+//          var y = svgMaxY;
+//          var stepX = svgMaxX/numbersOfSpikes;
+          //loop here
+//          for (var i = 0; i<=numbersOfSpikes; i++) {
+
+              //y = Math.floor(Math.random() * svgMaxY);
+//              y = yOffset - yRandomRange + Math.floor(Math.random() * yRandomRange);
+//              pointsArray.push(x + ',' + y);
+//              x += stepX;
+//          }
+
+          // Bottom right
+//          pointsArray.push(svgMaxX + ',' + svgMaxY);
+
+          // Bottom left
+//          pointsArray.push('0,' + svgMaxY);
+          var pointsArray = getRandomPointsArray(numbersOfSpikes, yOffset, yRandomRange);
+
+          var polygon = makeSvg(
+                  'polygon',
+                  //{points: pointsArray.join(" "), style:'fill:lime', stroke: 'purple', 'stroke-width':  '2'}
+                  {id: layerId, points: pointsArray.join(" "), style:'fill:' + color, stroke: 'purple', 'stroke-width':  '2'}
+          );
+
+          document.getElementById(svgId).appendChild(polygon);
+          //$(mainSvg).appendChild(polygon);
+      }
+
+      function updateLayer(layerId, numbersOfSpikes, yOffset, yRandomRange, color) {
+          console.log("updateLayer");
+          console.log($("#" + layerId));
+          console.log("numbersOfSpikes", numbersOfSpikes);
+          console.log("yOffset", yOffset);
+          console.log("yRandomRange", yRandomRange);
+          console.log("color", color);
+
+          var pointsArray = getRandomPointsArray(numbersOfSpikes, yOffset, yRandomRange);
+          var pointsString = pointsArray.join(" ");
+          console.log("updateLayer");
+          console.log("pointsString", pointsString);
+
+          $("#" + layerId).attr("points", pointsString);
+      }
+
+      function getRandomPointsArray(numbersOfSpikes, yOffset, yRandomRange) {
+
+          console.log("getRandomPointsArray");
+          console.log("numberOfSpikes", numbersOfSpikes);
+          console.log("yOffset", yOffset);
+          console.log("yRandomRange", yRandomRange);
+          var pointsArray = [];
+
+          var x = 0;
+          var y = svgMaxY;
+          var stepX = svgMaxX/numbersOfSpikes;
+          //loop here
+          for (var i = 0; i<=numbersOfSpikes; i++) {
+
+              //y = Math.floor(Math.random() * svgMaxY);
+              y = yOffset - yRandomRange + Math.floor(Math.random() * yRandomRange);
+              pointsArray.push(x + ',' + y);
+              x += stepX;
+          }
+
+          // Bottom right
+          pointsArray.push(svgMaxX + ',' + svgMaxY);
+
+          // Bottom left
+          pointsArray.push('0,' + svgMaxY);
+
+          return pointsArray;
+      }
+
+      function updateFromInputFields($layerSelectionBox) {
+          var layerId = $layerSelectionBox.attr('id').substr(("selection_").length);
+          var numbersOfSpikes = $layerSelectionBox.find(".input_number_of_spikes").val();
+          var yOffset = $layerSelectionBox.find(".input_y_offset").val();
+          var yRandomRange = $layerSelectionBox.find(".input_y_random_range").val();
+
+          //TODO Get from Inputfield
+          var color = getRandomColor();
+
+          console.log("numbersOfSpikes", numbersOfSpikes);
+
+          updateLayer(layerId, numbersOfSpikes, yOffset, yRandomRange, color);
+      }
+
+      $(document).on('click', '.update_from_input_fields_button', function(event) {
+          var $layerSelectionBox = $(this).closest('.layer_selection_box');
+          updateFromInputFields($layerSelectionBox);
+      });
+
+
+      $(document).on('click', '.update_with_random_values_button', function(event) {
+          var $layerSelectionBox = $(this).closest('.layer_selection_box');
+          var layerId = $layerSelectionBox.attr('id').substr(("selection_").length);
+          $layerSelectionBox.find(".input_number_of_spikes").val(getRandomNumberOfSpikes());
+          $layerSelectionBox.find(".input_y_offset").val(getRandomYOffset());
+          $layerSelectionBox.find(".input_y_random_range").val(getRandomRange());
+
+          $layerSelectionBox.find('.update_from_input_fields_button').click();
+
+//          var layerId = $(this).closest('.layer_selection_box').attr('id');
+//          layerId = layerId.substr(("selection_").length);
+//
+//          var numbersOfSpikes = getRandomInt(20);
+//          var yOffset = getRandomInt(20);
+//          var yRandomRange = getRandomInt(20);
+//          var color = getRandomColor();
+//
+//          updateLayer(layerId, numbersOfSpikes, yOffset, yRandomRange, color);
+      });
+
+      $(document).on('click', '#add_layer_button', function(event) {
+          event.preventDefault();
+          console.log("add_layer_button");
+
+          var layerData = {
+              id: 'layer_' + (layerIds.length+1),
+              numbersOfSpikes: getRandomNumberOfSpikes(),
+              yOffset: getRandomYOffset(100),
+              yRandomRange: getRandomRange(),
+              color: getRandomColor()
+          };
+
+          addLayer(
+                  'main_svg',
+                  layerData.id,
+                  getRandomNumberOfSpikes(),
+                  layerData.yOffset,
+                  layerData.yRandomRange,
+                  layerData.color
+          );
+
+          layerData.yOffset += getRandomInt(Math.floor(svgMaxY/layerIds.length));
+          layerIds.push(layerData);
+
+          updateLayerSelectors();
+      });
+
+      $(document).on('click', '.layer_selection_box', function(event) {
+          $(".layer_selection_box").removeClass("active");
+          $(this).addClass("active");
+      });
+
+      $(document).on('change', '.layer_selection_box input', function(event) {
+          console.log("change");
+          var $layerSelectionBox = $(this).closest('.layer_selection_box');
+          updateFromInputFields($layerSelectionBox);
+      });
+
+
+      $(document).on('wheel', '.layer_selection_box input', function(event) {
+          console.log("event", event);
+          console.log(event.originalEvent);
+          if (event.originalEvent.deltaY > 0) {
+              this.value = parseInt(this.value) + 10;
+          } else {
+              this.value = parseInt(this.value) - 10;
+          }
+
+          $(this).change();
+          return false;
+
+      });
+//      $(document).on('click', '#add_layer_button', function(event) {
+//
+//      });
+
+
+      $( document ).ready(function() {
+          init();
+      });
+  </script>
+
+</body>
+
+</html>
