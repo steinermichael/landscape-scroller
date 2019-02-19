@@ -72,6 +72,7 @@ var LandscapeScroller = {
             var tmpId = 'input_y_number_of_spikes_' + layerData.id;
 
             tmpArray.push('<tr class="layer_selection_box" id="selection_' + layerData.id + '">');
+            tmpArray.push('   <td><div style="height: 10px; width: 10px; background-color: ' + layerData.color + '"></div></td>');
             tmpArray.push('   <td>' + layerData.id + '</td>');
             tmpArray.push('   <td><input id="' + tmpId + '" value="' + layerData.numbersOfSpikes + '" type="number" step="1" min="0" class="input_number_of_spikes"></td>');
             tmpArray.push('   <td><input id="' + tmpId + '" value="' + layerData.yOffset + '" type="number" class="input_y_offset"></td>');
