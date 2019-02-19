@@ -109,7 +109,7 @@ var LandscapeScroller = {
         console.log("yRandomRange", yRandomRange);
         console.log("color", color);
 
-        var pointsArray = getRandomPointsArray(numbersOfSpikes, yOffset, yRandomRange);
+        var pointsArray = this.getRandomPointsArray(numbersOfSpikes, yOffset, yRandomRange);
         var pointsString = pointsArray.join(" ");
         console.log("updateLayer");
         console.log("pointsString", pointsString);
@@ -149,7 +149,7 @@ var LandscapeScroller = {
         var yRandomRange = $layerSelectionBox.find(".input_y_random_range").val();
 
         //TODO Get from Inputfield
-        var color = getRandomColor();
+        var color = this.getRandomColor();
 
         console.log("numbersOfSpikes", numbersOfSpikes);
 
@@ -164,7 +164,7 @@ var LandscapeScroller = {
 
         $(document).on('click', '.update_from_input_fields_button', function(event) {
             var $layerSelectionBox = $(this).closest('.layer_selection_box');
-            this.updateFromInputFields($layerSelectionBox);
+            that.updateFromInputFields($layerSelectionBox);
         });
 
         $(document).on('click', '.move_layer_up_button', function(event) {
@@ -185,9 +185,9 @@ var LandscapeScroller = {
 
         $(document).on('click', '.update_with_random_values_button', function(event) {
             var $layerSelectionTr = $(this).closest('tr');
-            $layerSelectionTr.find(".input_number_of_spikes").val(this.getRandomNumberOfSpikes());
-            $layerSelectionTr.find(".input_y_offset").val(this.getRandomYOffset());
-            $layerSelectionTr.find(".input_y_random_range").val(this.getRandomRange());
+            $layerSelectionTr.find(".input_number_of_spikes").val(that.getRandomNumberOfSpikes());
+            $layerSelectionTr.find(".input_y_offset").val(that.getRandomYOffset());
+            $layerSelectionTr.find(".input_y_random_range").val(that.getRandomRange());
             $layerSelectionTr.find('.update_from_input_fields_button').click();
         });
 
@@ -226,7 +226,7 @@ var LandscapeScroller = {
         $(document).on('change', '.layer_selection_box input', function(event) {
             console.log("change");
             var $layerSelectionBox = $(this).closest('.layer_selection_box');
-            this.updateFromInputFields($layerSelectionBox);
+            that.updateFromInputFields($layerSelectionBox);
         });
 
 
