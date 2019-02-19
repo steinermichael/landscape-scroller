@@ -41,14 +41,12 @@ function getRandomRange() {
     return getRandomInt(svgMaxY/30);
 }
 
-function init() {
-    //var yOffset =
-
-    //var iterations = 1+getRandomInt(5);
+function initWithRandomLayers() {
     var iterations = 1;
     for (var i=0; i<iterations; i++) {
+        var layerData = {};
         var layerData = {
-            id: 'layer' + i,
+            id: 'layer_' + i,
             numbersOfSpikes: getRandomNumberOfSpikes(),
             yOffset: getRandomYOffset(100),
             yRandomRange: getRandomRange(),
@@ -87,9 +85,10 @@ function updateLayerSelectors() {
         tmpArray.push('   <td><input id="' + tmpId + '" value="' + layerData.yOffset + '" type="number" class="input_y_offset"></td>');
         tmpArray.push('   <td><input id="' + tmpId + '" value="' + layerData.yRandomRange + '" type="number" min="0" class="input_y_random_range"></td>');
         tmpArray.push('   <td>');
-        tmpArray.push('      <button class="update_from_input_fields_button">Update</button>');
-        tmpArray.push('      <button class="update_with_random_values_button" title="Randomize"><span class="fa fa-dice"></span></button>');
-        tmpArray.push('      <button class="remove_button" title="Remove"><span class="fa fa-trash"></span></button>');
+        tmpArray.push('      <button class="btn btn-secondary btn-sm update_from_input_fields_button">Update</button>');
+        tmpArray.push('      <button class="btn btn-secondary btn-sm update_with_random_values_button" title="Randomize"><span class="fa fa-dice"></span></button>');
+        tmpArray.push('      <button class="btn btn-secondary btn-sm remove_button" title="Remove"><span class="fa fa-trash"></span></button>');
+        // tmpArray.push('      <button class="btn btn-secondary btn-sm move_layer_up_button" title="Move one layer to front"><span class="fa fa-arrow-up"></span></button>');
         tmpArray.push('   </td>');
         tmpArray.push('</tr>');
     });
@@ -174,6 +173,12 @@ $(document).on('click', '.update_from_input_fields_button', function(event) {
     updateFromInputFields($layerSelectionBox);
 });
 
+$(document).on('click', '.move_layer_up_button', function(event) {
+    var $layerSelectionTr = $(this).closest('tr');
+    var selectionId = $layerSelectionTr.attr('id');
+    //TODO Implement
+});
+
 $(document).on('click', '.remove_button', function(event) {
     var $layerSelectionTr = $(this).closest('tr');
     var selectionId = $layerSelectionTr.attr('id');
@@ -197,7 +202,7 @@ $(document).on('click', '#add_layer_button', function(event) {
     console.log("add_layer_button");
 
     var layerData = {
-        id: 'layer_' + (layerIds.length+1),
+        id: 'layer_' + (layerIds.length),
         numbersOfSpikes: getRandomNumberOfSpikes(),
         yOffset: getRandomYOffset(100),
         yRandomRange: getRandomRange(),
@@ -246,5 +251,5 @@ $(document).on('wheel', '.layer_selection_box input', function(event) {
 });
 
 $( document ).ready(function() {
-    init();
+    initWithRandomLayers();
 });
