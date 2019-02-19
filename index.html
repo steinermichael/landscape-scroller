@@ -12,6 +12,8 @@
   <link rel="apple-touch-icon" href="icon.png">
   <!-- Place favicon.ico in the root directory -->
 
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
+
   <link rel="stylesheet" href="css/normalize.css">
   <link rel="stylesheet" href="css/main.css">
 </head>
@@ -62,7 +64,7 @@
   <svg id="main_svg" height="600" width="1000"></svg>
 
   <form>
-    <button type="submit" id="add_layer_button">Add Layer</button>
+    <button type="submit" id="add_layer_button"><span class="fa fa-plus"></span> Add Layer</button>
   </form>
 
   <div id="layer_selectors"></div>
@@ -155,7 +157,8 @@
           $.each(layerIds, function(index, layerData) {
               tmpArray.push('<div class="layer_selection_box" id="selection_' + layerData.id + '">' + layerData.id + '');
               tmpArray.push('   <button class="update_from_input_fields_button">Update</button>');
-              tmpArray.push('   <button class="update_with_random_values_button">Random</button>');
+              tmpArray.push('   <button class="update_with_random_values_button"><span class="fa fa-dice"></span></button>');
+              tmpArray.push('   <button class="remove_button" title="remove layer"><span class="fa fa-trash"></span></button></button>');
               tmpId = 'input_y_number_of_spikes_' + layerData.id;
               tmpArray.push('   <label for="' + tmpId + '">numbersOfSpikes</label><input id="' + tmpId + '" value="' + layerData.numbersOfSpikes + '" type="number" step="1" class="input_number_of_spikes">');
               var tmpId = 'input_y_offset_' + layerData.id;
@@ -270,6 +273,10 @@
           updateFromInputFields($layerSelectionBox);
       });
 
+
+      $(document).on('click', '.remove_button', function(event) {
+
+      });
 
       $(document).on('click', '.update_with_random_values_button', function(event) {
           var $layerSelectionBox = $(this).closest('.layer_selection_box');
